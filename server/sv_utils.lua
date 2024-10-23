@@ -1,4 +1,4 @@
-local webhookUrl = 'https://canary.discord.com/api/webhooks/1298503005548838962/fp0m2zk3BUthZM_DqHrc82ro9FbBPgj05t-8_vIU5XRqO0XD-cf4rrRJyAXES91usVls' -- Replace with your actual Discord Webhook URL
+local webhookUrl = 'Replace_With_Your_Webhook' -- Replace with your actual Discord Webhook URL
 
 function SendDiscordLog(shopLabel, itemsSold, totalAmount, player)
     local playerName = GetPlayerName(player)
