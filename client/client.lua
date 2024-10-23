@@ -137,14 +137,22 @@ function OpenSellMenu(shop)
         local count = playerInventory[item] and playerInventory[item].count or 0
 
         if count > 0 then
+            -- Check if price is a table (dynamic) or a static value
+            local price
+            if type(data.price) == "table" then
+                price = math.random(data.price.min, data.price.max) -- Get random price between min and max
+            else
+                price = data.price -- Use static price
+            end
+
             table.insert(elements, {
                 title = data.name,
-                description = 'Total: ' .. count .. ' | Price: $' .. data.price,
+                description = 'Total: ' .. count .. ' | Price: $' .. price,
                 event = 'neon_sellshop:sell',
                 args = {
                     item = item,
                     count = count,
-                    price = data.price,
+                    price = price,
                     moneyType = shop.moneyType,
                     shopLabel = shop.label
                 }
