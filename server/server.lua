@@ -28,12 +28,18 @@ local function GetItemPrice(shopLabel, item)
     for _, shop in pairs(Config.Shops) do
         if shop.label == shopLabel then
             if shop.materials[item] then
-                return shop.materials[item].price
+                local priceData = shop.materials[item].price
+                if type(priceData) == "table" then
+                    return math.random(priceData.min, priceData.max)
+                else
+                    return priceData
+                end
             end
         end
     end
     return nil
 end
+
 
 RegisterNetEvent('neon_sellshop:sellMaterial', function(data)
     local src = source
@@ -59,6 +65,7 @@ RegisterNetEvent('neon_sellshop:sellMaterial', function(data)
     end
 
     local totalPrice = data.amount * itemPrice
+
     local removed = false
     if Config.Framework == 'ESX' then
         removed = xPlayer.removeInventoryItem(data.item, data.amount)

@@ -204,7 +204,17 @@ function Notify(message, type)
 end
 
 RegisterNetEvent('neon_sellshop:sell', function(data)
-    local input = lib.inputDialog('Sell Amount', {'Enter amount to sell'})
+    local input = nil
+
+    if Config.InputType == 'input' then
+        input = lib.inputDialog('Sell Amount', {
+            { label = 'Enter amount to sell', type = 'input' }
+        })
+    elseif Config.InputType == 'slider' then
+        input = lib.inputDialog('Sell Amount', {
+            { label = 'Select amount to sell', type = 'slider', min = 1, max = data.count }
+        })
+    end
 
     if not input or not tonumber(input[1]) then
         Notify('Invalid amount entered.', 'error')

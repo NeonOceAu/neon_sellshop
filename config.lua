@@ -4,6 +4,7 @@ Config = {
     Interaction = 'target', -- Options: 'target', 'textui'. Default is 'target'.
     Target = 'ox_target', -- Options: 'ox_target', 'qb-target'. Default is 'ox_target'.
     DirtyMoneyItem = 'marked_bills', -- Set your dirty money item here
+    InputType = 'slider', -- Options: 'input', 'slider'.
     Shops = {
         {
             label = "Material Buyer",

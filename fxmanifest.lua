@@ -5,7 +5,7 @@ lua54 'yes'
 
 author 'Neon Scripts'
 description 'Sell Shop System'
-version '1.0.3'
+version '1.0.4'
 
 shared_scripts {
     '@ox_lib/init.lua',
