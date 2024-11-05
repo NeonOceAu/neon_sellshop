@@ -1,5 +1,4 @@
 local Config = Config or {}
-
 local Framework = nil
 
 if Config.Framework == 'ESX' then
@@ -12,21 +11,19 @@ if Config.Framework == 'ESX' then
     end)
 elseif Config.Framework == 'QB' then
     Framework = exports['qb-core']:GetCoreObject()
+elseif Config.Framework == 'QBX' then
+    Framework = exports.qbx_core
 end
 
--- Function to set random prices for Mining Buyer
 function SetRandomPrices(shop)
-    if shop.label == "Mining Buyer" then
-        for item, data in pairs(shop.materials) do
-            if type(data.price) == "table" then
-                local randomPrice = math.random(data.price.min, data.price.max)
-                shop.materials[item].price = randomPrice
-            end
+    for item, data in pairs(shop.materials) do
+        if type(data.price) == "table" then
+            local randomPrice = math.random(data.price.min, data.price.max)
+            shop.materials[item].price = randomPrice
         end
     end
 end
 
--- Function to handle interactions (textui or target)
 function SetupInteraction(shop)
     if Config.Interaction == 'target' then
         SetupTargetInteraction(shop)
@@ -35,7 +32,6 @@ function SetupInteraction(shop)
     end
 end
 
--- Function to set up target interaction (ox_target or qb-target)
 function SetupTargetInteraction(shop)
     local targetFramework = Config.Target == 'ox_target' and 'ox_target' or 'qb-target'
 
@@ -65,7 +61,6 @@ function SetupTargetInteraction(shop)
     end
 end
 
--- Function to set up textui interaction
 function SetupTextUIInteraction(shop)
     CreateThread(function()
         while true do
@@ -76,7 +71,7 @@ function SetupTextUIInteraction(shop)
             if dist <= 3.0 then
                 lib.showTextUI(shop.targetLabel)
 
-                if IsControlJustPressed(0, 38) then -- E key by default
+                if IsControlJustPressed(0, 38) then
                     OpenSellMenu(shop)
                 end
             else
@@ -87,24 +82,20 @@ function SetupTextUIInteraction(shop)
     end)
 end
 
--- Create the shops and apply interaction
 function CreateShop(shop)
     SetRandomPrices(shop)
     
-    -- Load ped model
     local pedHash = GetHashKey(shop.pedModel)
     RequestModel(pedHash)
     while not HasModelLoaded(pedHash) do
         Wait(1)
     end
 
-    -- Create ped
     shop.ped = CreatePed(4, pedHash, shop.pedCoords.x, shop.pedCoords.y, shop.pedCoords.z, shop.pedCoords.w, false, true)
     FreezeEntityPosition(shop.ped, true)
     SetEntityInvincible(shop.ped, true)
     SetBlockingOfNonTemporaryEvents(shop.ped, true)
 
-    -- Create blip if enabled
     if shop.blip then
         local blip = AddBlipForCoord(shop.pedCoords.x, shop.pedCoords.y, shop.pedCoords.z)
         SetBlipSprite(blip, shop.blipSettings.sprite)
@@ -117,32 +108,28 @@ function CreateShop(shop)
         EndTextCommandSetBlipName(blip)
     end
 
-    -- Setup interaction (target or textui)
     SetupInteraction(shop)
 end
 
--- Loop through all shops and create them
 CreateThread(function()
     for _, shop in pairs(Config.Shops) do
         CreateShop(shop)
     end
 end)
 
--- Open Sell Menu
 function OpenSellMenu(shop)
     local elements = {}
-    local playerInventory = exports.ox_inventory:Items() -- Fetch player inventory
+    local playerInventory = GetPlayerInventory()
 
     for item, data in pairs(shop.materials) do
         local count = playerInventory[item] and playerInventory[item].count or 0
 
         if count > 0 then
-            -- Check if price is a table (dynamic) or a static value
             local price
             if type(data.price) == "table" then
-                price = math.random(data.price.min, data.price.max) -- Get random price between min and max
+                price = math.random(data.price.min, data.price.max)
             else
-                price = data.price -- Use static price
+                price = data.price
             end
 
             table.insert(elements, {
@@ -174,16 +161,48 @@ function OpenSellMenu(shop)
     lib.showContext('sell_materials_menu')
 end
 
--- Notify function for both frameworks
+function GetPlayerInventory()
+    if Config.Inventory == 'OX' then
+        return exports.ox_inventory:Items()
+    elseif Config.Inventory == 'QB' then
+        return GetQBInventory()
+    elseif Config.Inventory == 'PS' then
+        return GetPSInventory()
+    end
+end
+
+function GetQBInventory()
+    local PlayerData = Framework.Functions.GetPlayerData()
+    local inventory = {}
+
+    for _, item in pairs(PlayerData.items) do
+        inventory[item.name] = { count = item.amount }
+    end
+
+    return inventory
+end
+
+function GetPSInventory()
+    local PlayerData = exports['ps-inventory']:getPlayerInventory()
+    local inventory = {}
+
+    for _, item in pairs(PlayerData) do
+        inventory[item.name] = { count = item.amount }
+    end
+
+    return inventory
+end
+
 function Notify(message, type)
     if Config.Framework == 'ESX' then
         ESX.ShowNotification(message)
     elseif Config.Framework == 'QB' then
         Framework.Functions.Notify(message, type)
+    elseif Config.Framework == 'QBX' then
+        exports.qbx_core:Notify(message, type)
     end
 end
 
--- Handle selling material
 RegisterNetEvent('neon_sellshop:sell', function(data)
     local input = lib.inputDialog('Sell Amount', {'Enter amount to sell'})
 
@@ -199,6 +218,13 @@ RegisterNetEvent('neon_sellshop:sell', function(data)
         return
     end
 
-    local totalPrice = amountToSell * data.price
-    TriggerServerEvent('neon_sellshop:sellMaterial', data.item, amountToSell, totalPrice, data.moneyType, data.shopLabel)
+    local payload = {
+        item = data.item,
+        amount = amountToSell,
+        shopLabel = data.shopLabel,
+        price = data.price,
+        moneyType = data.moneyType
+    }
+
+    TriggerServerEvent('neon_sellshop:sellMaterial', payload)
 end)

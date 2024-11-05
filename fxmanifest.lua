@@ -5,7 +5,7 @@ lua54 'yes'
 
 author 'Neon Scripts'
 description 'Sell Shop System'
-version '1.0.1'
+version '1.0.3'
 
 shared_scripts {
     '@ox_lib/init.lua',
@@ -24,8 +24,5 @@ server_scripts {
 
 
 dependencies {
-    'ox_lib',
-    'ox_target',
-    'ox_inventory',
-    'qb-core'
+    'ox_lib'
 }

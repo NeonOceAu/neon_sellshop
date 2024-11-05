@@ -1,8 +1,9 @@
 Config = {
-    Framework = 'QB', -- Options: 'QB', 'ESX'. Default is 'QB'.
+    Framework = 'QB', -- Options: 'QB', 'QBX' 'ESX'. Default is 'QB'.
+    Inventory = 'OX', -- 'OX', 'QB', or 'PS'
     Interaction = 'target', -- Options: 'target', 'textui'. Default is 'target'.
     Target = 'ox_target', -- Options: 'ox_target', 'qb-target'. Default is 'ox_target'.
-
+    DirtyMoneyItem = 'marked_bills', -- Set your dirty money item here
     Shops = {
         {
             label = "Material Buyer",
@@ -16,10 +17,10 @@ Config = {
                 color = 2,
                 label = "Material Buyer"
             },
-            moneyType = "cash",  -- 'cash' for clean money, 'dirtymoney' for dirty money
+            moneyType = "cash",  -- 'cash' for clean money, 'dirtymoney' for dirty money (Make sure to set item up in DirtyMoneyItem (Above^))
             targetLabel = "Sell Materials", -- Label for ox_target/qb-target interaction
             materials = {
-                ['steel'] = { name = 'Scrap Metal', price = 10 },
+                ['steel'] = { name = 'Scrap Metal', price = {min = 12, max = 18} },
                 ['copper_wire'] = { name = 'Copper Wire', price = {min = 12, max = 18} }, -- Price range
             }
         },
