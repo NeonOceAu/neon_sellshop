@@ -1,4 +1,4 @@
-![GitHub all releases](https://img.shields.io/github/downloads/NeonOceAu/neon_sellshop/total?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/NeonOceAu/neon_sellshop/total?color=blue&style=flat-square)
 
 # Neon Sell Shop
 
