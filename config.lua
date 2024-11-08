@@ -1,4 +1,5 @@
 Config = {
+    Version = true, -- This will print new updates in server console.
     Framework = 'QB', -- Options: 'QB', 'QBX' 'ESX'. Default is 'QB'.
     Inventory = 'OX', -- 'OX', 'QB', or 'PS'
     Interaction = 'target', -- Options: 'target', 'textui'. Default is 'target'.
